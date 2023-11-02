@@ -2,7 +2,9 @@ GOHOSTOS:=$(shell go env GOHOSTOS)
 GOPATH:=$(shell go env GOPATH)
 VERSION:=$(shell git describe --tags --always)
 NAME:=$(shell basename `pwd` )
-SOURCE:=factory route2 weth
+
+
+
 
 
 ifeq ($(GOHOSTOS), windows)
@@ -20,6 +22,26 @@ endif
 .PHONY: init
 # init env
 init:
+	GOPROXY=https://goproxy.cn/,direct go install github.com/zeromicro/go-zero/tools/goctl@latest
+
+
+.PHONY: add.api
+# init env
+add.api:
+	cd restful && goctl api new $(NAME)
+
+
+
+.PHONY: start
+# starte
+start:
+	cd "restful/$(NAME)" && \
+    go mod tidy && \
+	CGO_ENABLED=0 GOOS=darwin  GOARCH=arm64 go install   -ldflags="-s -w"  -ldflags "-X main.Version=$(VERSION)"  -ldflags "-X main.Name=$$NAME"  $(NAME).go && \
+	mkdir -p "$(GOPATH)/restful/$(NAME)/etc/" && \
+	cp -rf  "etc/$(NAME)-api.yaml" "$(NAME)-api.yaml" && \
+	"$(GOPATH)/bin/$(NAME)" -f "$(NAME)-api.yaml"
+
 
 
 
