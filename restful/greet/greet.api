@@ -1,12 +1,12 @@
-type Request {
+type MemberRequest {
 	Name string `path:"name,options=you|me"`
 }
 
-type Response {
+type MemberResponse {
 	Message string `json:"message"`
 }
 
 service greet-api {
 	@handler GreetHandler
-	get /from/:name(Request) returns (Response)
+	get /swimlane/member (MemberRequest) returns (MemberResponse)
 }
